@@ -99,6 +99,20 @@ function Block:setState(state)
   self.state = state
 end
 
+function Block:shiftRight()
+  self.position.x = self.position.x + 1
+  if self.position.x > 16 then
+    self.position.x = 0
+  end
+end
+
+function Block:shiftLeft()
+  self.position.x = self.position.x - 1
+  if self.position.x < 0 then
+    self.position.x = 16
+  end
+end
+
 function Block:isOffscreen()
   return self.position.y * (self.image:getHeight() * self.scale.y) + boardOffset.y > love.graphics:getHeight()
 end

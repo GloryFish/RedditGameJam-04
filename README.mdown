@@ -1,10 +1,28 @@
 # Reddit Game Jam 04
 
+## Info
+
 Rules: http://www.reddit.com/r/RedditGameJam/comments/eattc/reddit_game_jam_04_rules/
 
 IRC: freenode.net #redditgamejam
 
 
+## TODO:
+
+
+- Fix collision issue when moving dead blocks
+- Add puzzle music
+- Add +10 point markers
+- Add scoring sound effect
+- How to play panel
+
+- Add monsters (jump up and down?)
+- Add pickups
+- Run and jump guy
+- Shoot
+- Add boss
+
+- Add bomb
 
 ## Resources used
 

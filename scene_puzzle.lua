@@ -66,12 +66,26 @@ function puzzle.keypressed(self, key, unicode)
   
   if key == 'right' then
     puzzle.hole:moveRight()
+    puzzle.shiftDeadBlocksRight()
     
   elseif key == 'left' then
     puzzle.hole:moveLeft()
+    puzzle.shiftDeadBlocksLeft()
     
   elseif key == 'escape' then
     love.event.push('q')
+  end
+end
+
+function puzzle.shiftDeadBlocksRight()
+  for index, block in pairs(puzzle.blocks.dead) do
+    block:shiftRight()
+  end
+end
+
+function puzzle.shiftDeadBlocksLeft()
+  for index, block in pairs(puzzle.blocks.dead) do
+    block:shiftLeft()
   end
 end
 
@@ -129,7 +143,7 @@ function puzzle.update(self, dt)
     -- Should we spawn a new block?
     if droppingCount < 1 then
       puzzle.addBlock()
-    elseif droppingCount < 4 and math.random(0, 10) == 1 then
+    elseif droppingCount < 4 and math.random(0, 3) == 1 then
       puzzle.addBlock()
     end
     
