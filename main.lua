@@ -8,7 +8,7 @@
 
 require 'gamestate'
 require 'scene_puzzle'
-
+require 'scene_shooter'
 
 function love.load()
   love.graphics.setCaption('Reddit Game Jam 04')
@@ -49,7 +49,7 @@ function love.load()
 
   
   Gamestate.registerEvents()
-  Gamestate.switch(puzzle)
+  Gamestate.switch(shooter)
 end
 
 function love.update(dt)

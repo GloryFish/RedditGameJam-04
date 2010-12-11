@@ -15,17 +15,39 @@ Player = class(function(player, pos)
   
     player.color = {
       r = 255,
-      g = 255,
-      b = 255,
+      g = 140,
+      b = 0,
       a = 255,
     }
     
     player.image = graphics.playerWalkA
     
     player.offset = vector(player.image:getWidth() / 2, player.image:getHeight() / 2) 
+    player.size = vector(player.image:getWidth(), player.image:getHeight())
+    
+    player.runningSpeed = 40
 
   end)
-  
+
+function Player:respawn()
+  self.position = vector(math.random(200, 400), 200)
+end
+
+function Player:getRightScreenEdge()
+  return self.position.x + self.size.x
+end
+
+function Player:getLeftScreenEdge()
+  return self.position.x
+end
+
+function Player:getTopScreenEdge()
+  return self.position.y - self.size.y
+end
+
+function Player:getBottomScreenEdge()
+  return self.position.y + self.size.y
+end
   
 function Player:draw()
   local image = self.image

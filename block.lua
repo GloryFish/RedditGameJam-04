@@ -113,6 +113,51 @@ function Block:shiftLeft()
   end
 end
 
+-- Take an objects position, siz, and movementVector and return a movement vector that prevents collision with the block
+function Block:collideInScreenSpace(object, movementVector)
+  -- Dont collide if the object is not moving
+  -- if movementVector == vector(0,0) then
+  --   return movementVector
+  -- end
+  -- 
+  -- -- Don't collide if the object is far away
+  -- if position:dist(self:getScreenPosition()) > 16 then
+  --   return movementVector
+  -- end
+  -- 
+  if movementVector.y > 0 then -- Object is falling
+    if object:getRightScreenEdge() > self:getLeftScreenEdge() and
+       object:getLeftScreenEdge() < self:getRightScreenEdge() and
+       object:getBottomScreenEdge() > self:getTopScreenEdge() then
+       movementVector.y = 0
+    end
+  end     
+  
+  return movementVector
+end
+
+function Block:getLeftScreenEdge()
+  local pos = self:getScreenPosition()
+  return pos.x - (self.image:getWidth() / 2)  
+end
+
+function Block:getRightScreenEdge()
+  local pos = self:getScreenPosition()
+  return pos.x + (self.image:getWidth() / 2)  
+end
+
+function Block:getTopScreenEdge()
+  local pos = self:getScreenPosition()
+  return pos.y - (self.image:getHeight() / 2)  
+end
+
+function Block:getBottomScreenEdge()
+  local pos = self:getScreenPosition()
+  return pos.y + (self.image:getHeight() / 2)  
+end
+
+
+
 function Block:isOffscreen()
   return self.position.y * (self.image:getHeight() * self.scale.y) + boardOffset.y > love.graphics:getHeight()
 end
