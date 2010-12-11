@@ -9,7 +9,7 @@
 require 'class'
 require 'vector'
 
-Block = class(function(block, pos, block_type)
+Block = class(function(block, pos, block_kind)
     block.position = pos
     block.scale = vector(2.0, 2.0)
   
@@ -20,7 +20,7 @@ Block = class(function(block, pos, block_type)
       a = 255,
     }
     
-    block.type = block_type
+    block.kind = block_kind
     
     block.image = graphics.blockA
     
@@ -30,10 +30,14 @@ Block = class(function(block, pos, block_type)
   
   
 function Block:draw()
+  -- These are offsets to shift the entire board
+  local x_offset = 150
+  local y_offset = 100
+  
   local image = nil
   local color = nil
 
-  if self.type == 'good' then
+  if self.kind == 'good' then
     image = graphics.blockA
     color = {
       r = 0,
@@ -60,8 +64,8 @@ function Block:draw()
   
   love.graphics.draw(
     image,
-    math.floor(self.position.x * (image:getWidth() * self.scale.x)),
-    math.floor(self.position.y * (image:getHeight() * self.scale.y)),
+    math.floor(self.position.x * (image:getWidth() * self.scale.x)) + x_offset,
+    math.floor(self.position.y * (image:getHeight() * self.scale.y)) + y_offset,
     self.orientation,
     self.scale.x,
     self.scale.y,

@@ -3,3 +3,12 @@
 Rules: http://www.reddit.com/r/RedditGameJam/comments/eattc/reddit_game_jam_04_rules/
 
 IRC: freenode.net #redditgamejam
+
+
+
+## Resources used
+
+### Textures
+
+Possibly Useful Things by ETG
+http://forums.tigsource.com/index.php?topic=8876.0

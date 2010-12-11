@@ -8,22 +8,50 @@
 
 require 'gamestate'
 require 'block'
+require 'hole'
 require 'vector'
 
 puzzle = Gamestate.new()
 
 
 function puzzle.enter(self, pre)
+  
+  love.graphics.setBackgroundColor(20, 20, 35)
+  
   local position = vector(300, 300)
-  puzzle.block = Block(vector(1,1), 'good')
-  puzzle.block1 = Block(vector(1,2), 'good')
-  puzzle.block2 = Block(vector(1,3), 'good')
-  puzzle.block3 = Block(vector(2,1), 'bad')
-  puzzle.block4 = Block(vector(2,2), 'bad')
-  puzzle.block5 = Block(vector(2,3), 'good')
-  puzzle.block6 = Block(vector(3,1), 'good')
-  puzzle.block7 = Block(vector(3,2), 'bad')
-  puzzle.block8 = Block(vector(3,3), 'good')
+  
+  puzzle.hole = Hole(vector(0, 11))
+  
+  puzzle.blocks = {}
+  puzzle.blocks.active = {}
+  puzzle.blocks.inactive = {}
+  
+  puzzle.randomboard()
+
+end
+
+-- A testing function, fills the grid with random blocks
+function puzzle.randomboard(self)
+  local block = {}
+  local kind = 'good'
+  
+  for i = 0, 16 do
+    for j = 0, 10 do
+      block = Block(vector(i, j), puzzle.getRandomKind())
+      table.insert(puzzle.blocks.active, block)
+    end
+  end
+  
+  
+  
+end
+
+function puzzle.getRandomKind()
+  if math.random(0,1) == 0 then
+    return 'good'
+  else
+    return 'bad'
+  end
 end
 
 
@@ -33,19 +61,22 @@ end
 
 
 function puzzle.draw(self)
-  love.graphics.print('PuzzleDrop', 10, 10)
+  love.graphics.setColor(200, 200, 200, 255)
+  love.graphics.setFont(fonts.default)
 
-
-  puzzle.block:draw()
-  puzzle.block1:draw()
-  puzzle.block2:draw()
-  puzzle.block3:draw()
-  puzzle.block4:draw()
-  puzzle.block5:draw()
-  puzzle.block6:draw()
-  puzzle.block7:draw()
-  puzzle.block8:draw()
+  love.graphics.print('PuzzleDrop', 30, 10)
+  local scoreLine = string.format('Score: %i', score)
+  local scoreLineWidth = fonts.default:getWidth(scoreLine)
   
+  love.graphics.print(scoreLine,
+                      love.graphics.getWidth() - 30 - scoreLineWidth,
+                      10)
+
+  for index, block in pairs(puzzle.blocks.active) do
+    block:draw()
+  end
+  
+  puzzle.hole:draw()
   
 end
 

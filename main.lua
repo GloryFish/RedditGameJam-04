@@ -19,11 +19,20 @@ function love.load()
     playerWalkB = love.graphics.newImage('resources/player-walk-b.png'),
     blockA = love.graphics.newImage('resources/block-a.png'),
     blockB = love.graphics.newImage('resources/block-b.png'),
+    hole = love.graphics.newImage('resources/hole.png'),
   }
   
   -- Don't blur the sprites
-  graphics.blockA:setFilter('nearest', 'nearest')
-  graphics.blockB:setFilter('nearest', 'nearest')
+  for index, image in pairs(graphics) do
+    image:setFilter('nearest', 'nearest')
+  end
+  
+  fonts = {
+    default = love.graphics.newFont('resources/fonts/silk.ttf', 24)
+  }
+
+  score = 0
+
   
   Gamestate.registerEvents()
   Gamestate.switch(puzzle)
