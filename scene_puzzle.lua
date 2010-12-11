@@ -12,6 +12,7 @@ require 'block'
 require 'hole'
 require 'logger'
 require 'vector'
+require 'scene_game'
 
 puzzle = Gamestate.new()
 
@@ -25,14 +26,18 @@ function puzzle.enter(self, pre)
   puzzle.frame = PuzzleFrame()
   puzzle.hole = Hole(vector(0, 11))
   
-  
   puzzle.blocks = {}
   puzzle.blocks.active = {}
   puzzle.blocks.dead = {}
   puzzle.blocks.inactive = {}
   
-  puzzle.duration = 0
-  puzzle.interval = 0.5
+  puzzle.duration = 0 -- A counter for how long it's been since the last block drop
+  puzzle.interval = 1 -- The time, in seconds, between block drops
+  
+  puzzle.difficultyDuration = 0 -- The amount of time spent in the current difficulty level
+  puzzle.difficultyInterval = 30 -- The amount of time between ramp-ups in difficulty
+  
+  puzzle.blockSpawnChance = 4 -- Set to one to spawn a block every time
   
   puzzle.logger = Logger(vector(5, 500))
 
@@ -65,16 +70,23 @@ end
 function puzzle.keypressed(self, key, unicode)
   
   if key == 'right' then
-    puzzle.hole:moveRight()
-    puzzle.shiftDeadBlocksRight()
+    if puzzle.hole:moveRight() then
+      puzzle.shiftDeadBlocksRight()
+    end
     
   elseif key == 'left' then
-    puzzle.hole:moveLeft()
-    puzzle.shiftDeadBlocksLeft()
+    if puzzle.hole:moveLeft() then
+      puzzle.shiftDeadBlocksLeft()
+    end
+  
+  elseif key == 'd' then
+    puzzle.increaseDifficulty()
     
   elseif key == 'escape' then
     love.event.push('q')
   end
+  
+  
 end
 
 function puzzle.shiftDeadBlocksRight()
@@ -92,8 +104,14 @@ end
 
 function puzzle.update(self, dt)
   puzzle.duration = puzzle.duration + dt
+  puzzle.difficultyDuration = puzzle.difficultyDuration + dt
   
   puzzle.logger:update()
+  
+  if puzzle.difficultyDuration > puzzle.difficultyInterval then
+    puzzle.increaseDifficulty()
+    puzzle.difficultyDuration = 0
+  end
   
   if puzzle.duration > puzzle.interval then
 
@@ -133,9 +151,9 @@ function puzzle.update(self, dt)
     end
 
     -- Remove blocks marked for removal
-    for i, index in pairs(toDeactivate) do
-      puzzle.deactivateBlock(index)
-    end
+    -- for i, index in pairs(toDeactivate) do
+    --   puzzle.deactivateBlock(index)
+    -- end
     for i, index in pairs(toKill) do
       puzzle.killBlock(index)
     end
@@ -143,16 +161,36 @@ function puzzle.update(self, dt)
     -- Should we spawn a new block?
     if droppingCount < 1 then
       puzzle.addBlock()
-    elseif droppingCount < 4 and math.random(0, 3) == 1 then
+    elseif droppingCount < 4 and math.random(0, puzzle.blockSpawnChance) == 0 then
       puzzle.addBlock()
     end
     
     puzzle.duration = 0
   end
   
+  if #puzzle.blocks.dead > 69 then
+    puzzle.morph()
+  end
+  
   puzzle.logger:addLine(string.format("Active: %i", #puzzle.blocks.active))
   puzzle.logger:addLine(string.format("Dead: %i", #puzzle.blocks.dead))
   puzzle.logger:addLine(string.format("Inactive: %i", #puzzle.blocks.inactive))
+end
+
+function puzzle.morph()
+  Gamestate.switch(mygame)
+end
+
+function puzzle.increaseDifficulty()
+  puzzle.interval = puzzle.interval - 0.1
+  if puzzle.interval < 0.1 then
+    puzzle.interval = 0.1
+  end
+  
+  puzzle.blockSpawnChance = puzzle.blockSpawnChance - 1
+  if puzzle.blockSpawnChance < 1 then
+    puzzle.blockSpawnChance = 1
+  end
 end
 
 function puzzle.deactivateBlock(index)

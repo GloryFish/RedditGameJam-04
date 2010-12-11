@@ -31,7 +31,10 @@ function Hole:moveRight()
   
   if self.position.x > 13 then
     self.position.x = 13
+    return false
   end
+  
+  return true
 end  
 
 function Hole:moveLeft()
@@ -39,7 +42,10 @@ function Hole:moveLeft()
   
   if self.position.x < 0 then
     self.position.x = 0
+    return false
   end
+  
+  return true
 end  
 
 
