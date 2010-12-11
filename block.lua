@@ -37,7 +37,6 @@ Block = class(function(block, pos, block_kind)
 
     block.state = 'dropping'
     
-    
     block.offset = vector(block.image:getWidth() / 2, block.image:getHeight() / 2) 
 
   end)

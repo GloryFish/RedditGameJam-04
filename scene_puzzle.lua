@@ -38,9 +38,11 @@ function puzzle.enter(self, pre)
   puzzle.interval = 1 -- The time, in seconds, between block drops
   
   puzzle.difficultyDuration = 0 -- The amount of time spent in the current difficulty level
-  puzzle.difficultyInterval = 30 -- The amount of time between ramp-ups in difficulty
+  puzzle.difficultyInterval = 20 -- The amount of time between ramp-ups in difficulty
   
   puzzle.blockSpawnChance = 4 -- Set to one to spawn a block every time
+  
+  puzzle.blocksTilMorph = 55 -- The number of blocks that need to be dead before morphing to the next style
   
   puzzle.logger = Logger(vector(5, 500))
 
@@ -184,7 +186,7 @@ function puzzle.update(self, dt)
     puzzle.duration = 0
   end
   
-  if #puzzle.blocks.dead > 30 then
+  if #puzzle.blocks.dead >= puzzle.blocksTilMorph then
     puzzle.morph()
   end
   
@@ -224,14 +226,20 @@ end
 
 function puzzle.addBlock()
   local x = math.random(0, 16)
+  
+  -- Don't spawn bad blocks on the ends because the hole can't reach them
+  local kind = puzzle.getRandomKind()
+  if x == 0 or x == 16 then
+    kind = 'good'
+  end
 
   local block = {}
 
   if #puzzle.blocks.inactive == 0 then
-    block = Block(vector(x, 0), puzzle.getRandomKind())
+    block = Block(vector(x, 0), kind)
   else
     block = table.remove(puzzle.blocks.inactive)
-    block:reset(vector(x, 0), puzzle.getRandomKind())
+    block:reset(vector(x, 0), kind)
   end
   
   table.insert(puzzle.blocks.active, block)
