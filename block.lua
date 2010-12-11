@@ -12,18 +12,31 @@ require 'vector'
 Block = class(function(block, pos, block_kind)
     block.position = pos
     block.scale = vector(2.0, 2.0)
-  
-    block.color = {
-      r = 255,
-      g = 255,
-      b = 255,
-      a = 255,
-    }
     
     block.kind = block_kind
+
+    if block.kind == 'good' then
+      block.color = {
+        r = 0,
+        g = 255,
+        b = 0,
+        a = 255,
+      }
+      block.image = graphics.blockA
+
+    else
+      block.color = {
+        r = 255,
+        g = 0,
+        b = 0,
+        a = 255,
+      }
+      block.image = graphics.blockB
+      
+    end
+
     block.state = 'dropping'
     
-    block.image = graphics.blockA
     
     block.offset = vector(block.image:getWidth() / 2, block.image:getHeight() / 2) 
 
@@ -46,26 +59,8 @@ function Block:draw()
   local x_offset = boardOffset.x
   local y_offset = boardOffset.y
   
-  local image = nil
-  local color = nil
-
-  if self.kind == 'good' then
-    image = graphics.blockA
-    color = {
-      r = 0,
-      g = 255,
-      b = 0,
-      a = 255,
-    }
-  else
-    image = graphics.blockB
-    color = {
-      r = 255,
-      g = 0,
-      b = 0,
-      a = 255,
-    }
-  end
+  local image = self.image
+  local color = self.color
 
   if self.state == 'dead' then
     color = {
@@ -85,14 +80,20 @@ function Block:draw()
   
   love.graphics.draw(
     image,
-    math.floor(self.position.x * (image:getWidth() * self.scale.x)) + x_offset,
-    math.floor(self.position.y * (image:getHeight() * self.scale.y)) + y_offset,
+    math.floor(self.position.x * (image:getWidth() * self.scale.x)) + boardOffset.x,
+    math.floor(self.position.y * (image:getHeight() * self.scale.y)) + boardOffset.y,
     self.orientation,
     self.scale.x,
     self.scale.y,
     self.offset.x,
     self.offset.y
   )
+end
+
+-- Return the blocks position in screen coordinates
+function Block:getScreenPosition()
+  return vector(math.floor(self.position.x * (self.image:getWidth() * self.scale.x)) + boardOffset.x,
+                math.floor(self.position.y * (self.image:getHeight() * self.scale.y)) + boardOffset.y)
 end
 
 function Block:setState(state)

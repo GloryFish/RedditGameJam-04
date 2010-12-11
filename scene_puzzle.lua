@@ -10,9 +10,10 @@ require 'gamestate'
 require 'puzzle_frame'
 require 'block'
 require 'hole'
+require 'floating_text'
 require 'logger'
 require 'vector'
-require 'scene_game'
+require 'scene_shooter'
 
 puzzle = Gamestate.new()
 
@@ -30,6 +31,8 @@ function puzzle.enter(self, pre)
   puzzle.blocks.active = {}
   puzzle.blocks.dead = {}
   puzzle.blocks.inactive = {}
+  
+  puzzle.floatingText = FloatingText()
   
   puzzle.duration = 0 -- A counter for how long it's been since the last block drop
   puzzle.interval = 1 -- The time, in seconds, between block drops
@@ -81,12 +84,19 @@ function puzzle.keypressed(self, key, unicode)
   
   elseif key == 'd' then
     puzzle.increaseDifficulty()
-    
+
+  elseif key == 't' then
+    local color = {
+      r = 255,
+      g = 255,
+      b = 255,
+      a = 255,
+    }
+    puzzle.floatingText:addText("Testing floater!!", vector(love.graphics:getWidth() / 2, love.graphics.getHeight() / 2), color, 3) 
+
   elseif key == 'escape' then
     love.event.push('q')
-  end
-  
-  
+  end  
 end
 
 function puzzle.shiftDeadBlocksRight()
@@ -106,6 +116,7 @@ function puzzle.update(self, dt)
   puzzle.duration = puzzle.duration + dt
   puzzle.difficultyDuration = puzzle.difficultyDuration + dt
   
+  puzzle.floatingText:update(dt)
   puzzle.logger:update()
   
   if puzzle.difficultyDuration > puzzle.difficultyInterval then
@@ -136,9 +147,14 @@ function puzzle.update(self, dt)
           
           -- is it a good block, or a bad one?
           if block.kind == 'good' then
-            puzzle.addPoints(10)
+            local points = 10
+            puzzle.addPoints(points)
+            puzzle.floatingText:addText(string.format("+%i", points), block:getScreenPosition(), block.color, 4) 
+            
           else 
-            puzzle.subtractPoints(10)
+            local points = 10
+            puzzle.subtractPoints(points)
+            puzzle.floatingText:addText(string.format("-%i", points), block:getScreenPosition(), block.color, 4) 
           end
           block:setState('dead')
           table.insert(toKill, index)
@@ -168,17 +184,19 @@ function puzzle.update(self, dt)
     puzzle.duration = 0
   end
   
-  if #puzzle.blocks.dead > 69 then
+  if #puzzle.blocks.dead > 30 then
     puzzle.morph()
   end
   
   puzzle.logger:addLine(string.format("Active: %i", #puzzle.blocks.active))
   puzzle.logger:addLine(string.format("Dead: %i", #puzzle.blocks.dead))
   puzzle.logger:addLine(string.format("Inactive: %i", #puzzle.blocks.inactive))
+  puzzle.logger:addLine(string.format("Texts: %i", #puzzle.floatingText.texts))
 end
 
 function puzzle.morph()
-  Gamestate.switch(mygame)
+  shooter.blocks = puzzle.blocks.dead
+  Gamestate.switch(shooter)
 end
 
 function puzzle.increaseDifficulty()
@@ -237,12 +255,26 @@ end
 
 function puzzle.addPoints(points)
   score = score + points
+  local color = {
+    r = 0,
+    g = 255,
+    b = 0,
+    a = 255,
+  }
 end
 
 function puzzle.subtractPoints(points)
   score = score - points
   if score < 0 then
     score = 0
+  else
+    local color = {
+      r = 255,
+      g = 0,
+      b = 0,
+      a = 255,
+    }
+    puzzle.floatingText:addText(string.format("-%i", points), vector(200, 200), color, 4) 
   end
 end
 
@@ -269,6 +301,8 @@ function puzzle.draw(self)
   end
   
   puzzle.hole:draw()
+  
+  puzzle.floatingText:draw()
   
   puzzle.logger:draw()
 end
