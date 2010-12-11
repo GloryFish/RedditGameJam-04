@@ -31,8 +31,8 @@ Block = class(function(block, pos, block_kind)
   
 function Block:draw()
   -- These are offsets to shift the entire board
-  local x_offset = 150
-  local y_offset = 100
+  local x_offset = boardOffset.x
+  local y_offset = boardOffset.y
   
   local image = nil
   local color = nil

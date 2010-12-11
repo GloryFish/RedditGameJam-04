@@ -11,4 +11,11 @@ IRC: freenode.net #redditgamejam
 ### Textures
 
 Possibly Useful Things by ETG
+
 http://forums.tigsource.com/index.php?topic=8876.0
+
+### Fonts
+
+Silkscreen by Jason Kottke
+
+http://www.dafont.com/silkscreen.font

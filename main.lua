@@ -20,6 +20,9 @@ function love.load()
     blockA = love.graphics.newImage('resources/block-a.png'),
     blockB = love.graphics.newImage('resources/block-b.png'),
     hole = love.graphics.newImage('resources/hole.png'),
+    vertical = love.graphics.newImage('resources/vertical.png'),
+    horizontal = love.graphics.newImage('resources/horizontal.png'),
+    corner = love.graphics.newImage('resources/corner.png'),
   }
   
   -- Don't blur the sprites
@@ -29,6 +32,12 @@ function love.load()
   
   fonts = {
     default = love.graphics.newFont('resources/fonts/silk.ttf', 24)
+  }
+
+  -- constants
+  boardOffset = {
+    x = 140,
+    y = 100
   }
 
   score = 0

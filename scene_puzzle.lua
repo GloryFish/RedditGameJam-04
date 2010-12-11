@@ -7,6 +7,7 @@
 -- 
 
 require 'gamestate'
+require 'puzzle_frame'
 require 'block'
 require 'hole'
 require 'vector'
@@ -20,7 +21,9 @@ function puzzle.enter(self, pre)
   
   local position = vector(300, 300)
   
+  puzzle.frame = PuzzleFrame()
   puzzle.hole = Hole(vector(0, 11))
+  
   
   puzzle.blocks = {}
   puzzle.blocks.active = {}
@@ -55,6 +58,15 @@ function puzzle.getRandomKind()
 end
 
 
+function puzzle.keypressed(self, key, unicode)
+  if key == 'right' then
+    puzzle.hole:moveRight()
+  elseif key == 'left' then
+    puzzle.hole:moveLeft()
+  end
+end
+
+
 function puzzle.update(self, dt)
   
 end
@@ -71,6 +83,8 @@ function puzzle.draw(self)
   love.graphics.print(scoreLine,
                       love.graphics.getWidth() - 30 - scoreLineWidth,
                       10)
+
+  puzzle.frame:draw()
 
   for index, block in pairs(puzzle.blocks.active) do
     block:draw()
