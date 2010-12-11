@@ -28,6 +28,7 @@ function puzzle.enter(self, pre)
   
   puzzle.blocks = {}
   puzzle.blocks.active = {}
+  puzzle.blocks.dead = {}
   puzzle.blocks.inactive = {}
   
   puzzle.duration = 0
@@ -82,7 +83,8 @@ function puzzle.update(self, dt)
   
   if puzzle.duration > puzzle.interval then
 
-    local toRemove = {}
+    local toDeactivate = {}
+    local toKill = {}
     local droppingCount = 0
     
     -- Process blocks
@@ -92,7 +94,7 @@ function puzzle.update(self, dt)
 
       -- Remove offscreen
       if block:isOffscreen() then
-        table.insert(toRemove, index)
+        table.insert(toDeactivate, index)
 
       elseif block.state == 'dropping' then
         -- check to see if this block has hit the floor or a dead block
@@ -106,7 +108,8 @@ function puzzle.update(self, dt)
           else 
             puzzle.subtractPoints(10)
           end
-          block:setState('dying')
+          block:setState('dead')
+          table.insert(toKill, index)
         else
           -- Tally the number of dropping blocks
           droppingCount = droppingCount + 1
@@ -116,8 +119,11 @@ function puzzle.update(self, dt)
     end
 
     -- Remove blocks marked for removal
-    for i, index in pairs(toRemove) do
+    for i, index in pairs(toDeactivate) do
       puzzle.deactivateBlock(index)
+    end
+    for i, index in pairs(toKill) do
+      puzzle.killBlock(index)
     end
     
     -- Should we spawn a new block?
@@ -131,12 +137,18 @@ function puzzle.update(self, dt)
   end
   
   puzzle.logger:addLine(string.format("Active: %i", #puzzle.blocks.active))
+  puzzle.logger:addLine(string.format("Dead: %i", #puzzle.blocks.dead))
   puzzle.logger:addLine(string.format("Inactive: %i", #puzzle.blocks.inactive))
 end
 
 function puzzle.deactivateBlock(index)
   block = table.remove(puzzle.blocks.active, index)
   table.insert(puzzle.blocks.inactive, block)
+end
+
+function puzzle.killBlock(index)
+  block = table.remove(puzzle.blocks.active, index)
+  table.insert(puzzle.blocks.dead, block)
 end
 
 
@@ -160,6 +172,14 @@ function puzzle.positionIsDead(pos)
   if pos.y == 11 and not puzzle.hole:positionIsInHole(pos) then
     return true
   end 
+  
+  for index, block in pairs(puzzle.blocks.dead) do
+    if pos.x == block.position.x and pos.y == block.position.y then
+      return true
+    end
+  end
+  
+  return false
   
 end
 
@@ -189,6 +209,10 @@ function puzzle.draw(self)
   puzzle.frame:draw()
 
   for index, block in pairs(puzzle.blocks.active) do
+    block:draw()
+  end
+
+  for index, block in pairs(puzzle.blocks.dead) do
     block:draw()
   end
   

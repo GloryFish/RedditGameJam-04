@@ -66,6 +66,15 @@ function Block:draw()
       a = 255,
     }
   end
+
+  if self.state == 'dead' then
+    color = {
+      r = 100,
+      g = 100,
+      b = 100,
+      a = 255,
+    }
+  end
   
   love.graphics.setColor(
     color.r,
