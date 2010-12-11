@@ -21,13 +21,25 @@ Block = class(function(block, pos, block_kind)
     }
     
     block.kind = block_kind
+    block.state = 'dropping'
     
     block.image = graphics.blockA
     
     block.offset = vector(block.image:getWidth() / 2, block.image:getHeight() / 2) 
 
   end)
-  
+
+function Block:reset(pos, block_kind)
+    self.kind = block_kind
+    self.position = pos
+    self.state = 'dropping'
+end
+
+function Block:update()
+  if self.state == 'dropping' then
+    self.position.y = self.position.y + 1
+  end
+end
   
 function Block:draw()
   -- These are offsets to shift the entire board
@@ -72,4 +84,12 @@ function Block:draw()
     self.offset.x,
     self.offset.y
   )
+end
+
+function Block:setState(state)
+  self.state = state
+end
+
+function Block:isOffscreen()
+  return self.position.y * (self.image:getHeight() * self.scale.y) + boardOffset.y > love.graphics:getHeight()
 end

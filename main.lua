@@ -13,6 +13,11 @@ require 'scene_puzzle'
 function love.load()
   love.graphics.setCaption('Reddit Game Jam 04')
   
+  -- Seed random
+  local seed = os.time()
+  math.randomseed(seed);
+  math.random(); math.random(); math.random()  
+  
   -- Preload resources
   graphics = {
     playerWalkA = love.graphics.newImage('resources/player-walk-a.png'),

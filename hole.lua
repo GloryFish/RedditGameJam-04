@@ -42,6 +42,17 @@ function Hole:moveLeft()
   end
 end  
 
+
+function Hole:positionIsInHole(pos)
+  if pos.y ~= self.position.y then
+    return false
+  end
+  
+  if pos.x >= self.position.x + 1 and pos.x < self.position.x + 3 then
+    return true
+  end
+  
+end
   
 function Hole:draw()
   -- These are offsets to shift the entire board
