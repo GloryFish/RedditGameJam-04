@@ -130,6 +130,7 @@ function Block:collideInScreenSpace(object, movementVector)
        object:getLeftScreenEdge() < self:getRightScreenEdge() and
        object:getBottomScreenEdge() > self:getTopScreenEdge() then
        movementVector.y = 0
+       object.onFloor = true
     end
   end     
   

@@ -25,7 +25,12 @@ Player = class(function(player, pos)
     player.offset = vector(player.image:getWidth() / 2, player.image:getHeight() / 2) 
     player.size = vector(player.image:getWidth(), player.image:getHeight())
     
-    player.runningSpeed = 40
+    player.runningSpeed = 150
+    player.runningDeceleration = 10
+    
+    player.onFloor = false
+    
+    player.velocity = vector(0,0)
 
   end)
 
@@ -47,6 +52,42 @@ end
 
 function Player:getBottomScreenEdge()
   return self.position.y + self.size.y
+end
+
+function Player:jump()
+  if self.onFloor then
+    self.onFloor = false
+    self.velocity = self.velocity + vector(0, -300)
+  end
+  
+end
+
+-- Call once per update if the user is pressing the right arrow key
+function Player:movingRight()
+  self.velocity.x = self.runningSpeed
+end
+
+-- Call once per update if the user is pressing the left arrow key
+function Player:movingLeft()
+  self.velocity.x = -self.runningSpeed
+end
+
+-- Call once per update if the user is not pressing left or right
+function Player:notMovingLeftOrRight()
+  
+  
+  if math.abs(self.velocity.x) < 2 * self.runningDeceleration then
+    self.velocity.x = 0
+  elseif self.velocity.x < 0 then
+    self.velocity.x = self.velocity.x + self.runningDeceleration 
+  elseif self.velocity.x > 0 then
+    self.velocity.x = self.velocity.x - self.runningDeceleration 
+  end  
+end
+
+
+function Player:update(dt)
+  self.position = self.position + (self.velocity * dt)
 end
   
 function Player:draw()

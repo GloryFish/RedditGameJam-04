@@ -29,18 +29,20 @@ function shooter.enter(self, pre)
   end
   
   
-  shooter.logger = Logger(vector(5, 50))
+  shooter.logger = Logger(vector(20, 50))
   
   shooter.player = Player(vector(200, 200))
   shooter.player:respawn()
   
-  shooter.gravity = 80
+  shooter.gravity = vector(0, 10)
   
 end
 
 function shooter.keypressed(self, key, unicode)
   if key == 'escape' then
     love.event.push('q')
+  elseif key == ' ' then
+    shooter.player:jump()
   elseif key == 'r' then
     shooter.player:respawn()
   end
@@ -48,20 +50,36 @@ end
 
 function shooter.update(self, dt)
   shooter.logger:update()
-  shooter.logger:addLine('Logger test')
   
   -- Calculate new player position by generating a movement vector, then adjusting that vector with collisions
   
+  -- Apply movement
+  if love.keyboard.isDown('right') then
+    shooter.player:movingRight()
+  elseif love.keyboard.isDown('left') then
+    shooter.player:movingLeft()
+  else
+    shooter.player:notMovingLeftOrRight()
+  end
+
   -- Apply gravity
-  local movementVector = vector(0,
-                                shooter.gravity * dt)
+  local newVelocity = shooter.player.velocity
+  newVelocity = newVelocity + shooter.gravity
   
   -- Collide with blocks
   for index, block in pairs(shooter.blocks) do
-    movementVector = block:collideInScreenSpace(shooter.player, movementVector)
+    newVelocity = block:collideInScreenSpace(shooter.player, newVelocity)
   end
   
-  shooter.player.position = shooter.player.position + movementVector
+  shooter.player.velocity = newVelocity
+  
+  shooter.player:update(dt)
+  
+  if shooter.player.onFloor then
+    shooter.logger:addLine("On Floor")
+  else
+    shooter.logger:addLine("NOT On Floor")
+  end
     
 end
 
